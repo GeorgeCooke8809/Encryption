@@ -1,3 +1,4 @@
+from ast import Pass
 from tkinter import *
 import customtkinter
 import ctypes
@@ -7,25 +8,86 @@ def encryptor_input_change(event):
 
     if page == "Lvl. 1":
         plain_text = text_in.get(0.0, 'end')
-        encrypt(plain_text)
+        encrypt(plain_text, 0)
 
-def encrypt(text):
-    global key_box, alphabet
+    elif page == "Lvl. 2":
+        plain_text = text_in.get(0.0, 'end')
+        string = ""
+        index = 0
 
-    new_alphabet = key_change(key_box)
+        for i in plain_text:
+            print(i)
 
-    encrypted = ""
+            next_encrypted_letter = encrypt(i, index)
 
-    for i in text:
+            string = string + str(next_encrypted_letter)
+
+            index = index + 1
+
+        print(string)
+
+def encrypt(text, index):
+    global key_box, alphabet, page
+
+    if page == "Lvl. 1":
+        new_alphabet = key_change(key_box)
+
+        encrypted = ""
+
+        for i in text:
+            try:
+                position_original_alphabet = alphabet.index(i)
+                new_char = new_alphabet[position_original_alphabet]
+                encrypted = encrypted + new_char
+            except:
+                encrypted = encrypted + i
+
+        text_out.delete(0.0, 'end')
+        text_out.insert(0.0, encrypted)
+
+    elif page == "Lvl. 2":
+
+        key_string = key_box.get()
         try:
-            position_original_alphabet = alphabet.index(i)
-            new_char = new_alphabet[position_original_alphabet]
-            encrypted = encrypted + new_char
-        except:
-            encrypted = encrypted + i
+            direction = key_string[0]
+            key_int = int(key_string[1:])
+            
+            length_key = len(str(key_int))
+            key_index = index % length_key
+            # DEBUG -- print(f"Key Index: {key_index}")
+            # DEBUG -- print(f"Key Int: {key_int}")
+            ammount = int(str(key_int)[key_index])
+            # DEBUG -- print(f"Shift For Letter: {ammount}")
+            
+            new_alphabet = []
+            new_alphabet.extend(alphabet)
 
-    text_out.delete(0.0, 'end')
-    text_out.insert(0.0, encrypted)
+            if direction == "L":
+                new_alphabet.extend(new_alphabet[0:ammount])
+                del(new_alphabet[0:ammount])
+            elif direction == "R":
+                temp = new_alphabet[-ammount:]
+                temp.extend(new_alphabet)
+                new_alphabet = temp
+                del(new_alphabet[-ammount:])
+
+            try:
+                position_original_alphabet = alphabet.index(text)
+                next_letter = new_alphabet[position_original_alphabet]
+            except:
+                next_letter = text
+
+            return next_letter
+
+        except:
+            print("BROKEN - YOU'RE A RETARD")
+
+        # 1. DONE get key
+        # 2. DONE get length of int
+        # 3. DONE MOD index by length
+        # 4. DONE get displacement in MODDED index
+        # 5. DONE shift alpabet
+        # 6. DONE return encrypted letter 
 
 def encrypt_alphabet(direction, ammount):
     global alphabet
@@ -87,7 +149,7 @@ def lvl_1_page():
     text_in.grid(row = 0, column = 0, columnspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
     key_box = StringVar()
-    key_box.trace("w", lambda name, index, mode, key_box=key_box: encrypt(text_in.get(0.0, 'end')))
+    key_box.trace("w", lambda name, index, mode, key_box=key_box: encryptor_input_change(text_in.get(0.0, 'end')))
 
     key = customtkinter.CTkEntry(content, placeholder_text = "Key", font = ("TkDefaultFont", 20), width = 400, textvariable = key_box)
     key.grid(row = 1, column = 0, padx = 10)
@@ -96,7 +158,9 @@ def lvl_1_page():
     text_out.grid(row = 2, column = 0, columnspan = 1, rowspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
 def lvl_2_page():
-    global content, page
+    global content, page, text_in, key_box, text_out
+
+    page = "Lvl. 2"
 
     content.destroy()
 
@@ -116,9 +180,13 @@ def lvl_2_page():
     content.columnconfigure(0, weight = 1)
 
     text_in = customtkinter.CTkTextbox(content, wrap = "word")
+    text_in.bind('<KeyRelease>', encryptor_input_change)
     text_in.grid(row = 0, column = 0, columnspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
-    key = customtkinter.CTkEntry(content, placeholder_text = "Key", font = ("TkDefaultFont", 20), width = 400)
+    key_box = StringVar()
+    key_box.trace("w", lambda name, index, mode, key_box=key_box: encryptor_input_change(text_in.get(0.0, 'end')))
+
+    key = customtkinter.CTkEntry(content, placeholder_text = "Key", font = ("TkDefaultFont", 20), width = 400, textvariable = key_box)
     key.grid(row = 1, column = 0, padx = 10)
 
     text_out = customtkinter.CTkTextbox(content, wrap = "word")
