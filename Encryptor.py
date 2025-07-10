@@ -1,4 +1,3 @@
-from ast import Pass
 from tkinter import *
 import customtkinter
 import ctypes
@@ -16,15 +15,12 @@ def encryptor_input_change(event):
         index = 0
 
         for i in plain_text:
-            print(i)
-
             next_encrypted_letter = encrypt(i, index)
-
             string = string + str(next_encrypted_letter)
-
             index = index + 1
 
-        print(string)
+        text_out.delete(0.0, 'end')
+        text_out.insert(0.0, string)
 
 def encrypt(text, index):
     global key_box, alphabet, page
@@ -54,10 +50,7 @@ def encrypt(text, index):
             
             length_key = len(str(key_int))
             key_index = index % length_key
-            # DEBUG -- print(f"Key Index: {key_index}")
-            # DEBUG -- print(f"Key Int: {key_int}")
             ammount = int(str(key_int)[key_index])
-            # DEBUG -- print(f"Shift For Letter: {ammount}")
             
             new_alphabet = []
             new_alphabet.extend(alphabet)
@@ -80,14 +73,7 @@ def encrypt(text, index):
             return next_letter
 
         except:
-            print("BROKEN - YOU'RE A RETARD")
-
-        # 1. DONE get key
-        # 2. DONE get length of int
-        # 3. DONE MOD index by length
-        # 4. DONE get displacement in MODDED index
-        # 5. DONE shift alpabet
-        # 6. DONE return encrypted letter 
+            pass
 
 def encrypt_alphabet(direction, ammount):
     global alphabet
