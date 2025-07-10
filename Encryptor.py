@@ -101,7 +101,7 @@ def key_change(key_box):
     if page == "Lvl. 1":
         try:
             if key_string[0] not in ["L", "R"]:
-                ctypes.windll.user32.MessageBoxW(0, "Key Must Begin With L or R", "WARNING:", 1)
+                ctypes.windll.user32.MessageBoxW(0, "Key Must Begin With L or R", "WARNING:", 0)
             
             return encrypt_alphabet(key_string[0], int(key_string[1:]))
 
@@ -179,15 +179,46 @@ def lvl_2_page():
     text_out.grid(row = 2, column = 0, columnspan = 1, rowspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
 def note_page():
-    global content
+    global content, page
+
+    page = "Notepad"
 
     content.destroy()
-    content = customtkinter.CTkFrame(menu_frame)
+    content = customtkinter.CTkFrame(menu_frame, fg_color = "transparent")
+    content.grid(row=1, column = 0, columnspan = 2, rowspan = 1, sticky = "nsew")
 
-    content.grid(row=1, column = 0, columnspan = 2, sticky = "nsew")
+    content.rowconfigure(0, weight = 1, minsize = 20)
+    content.rowconfigure(1, weight = 10000)
 
-    test = customtkinter.CTkLabel(content, text = "Notepad - INOP")
-    test.pack()
+    content.columnconfigure(0, weight = 1, minsize = 120)
+    content.columnconfigure(1, weight = 1, minsize = 120)
+    content.columnconfigure(2, weight = 1, minsize = 120)
+    content.columnconfigure(3, weight = 1000000)
+    content.columnconfigure(4, weight = 1, minsize = 300)
+    content.columnconfigure(5, weight = 1, minsize = 120)
+
+    new_file = customtkinter.CTkButton(content, text = "New File", font = ("TkDefaultFont", 20), command = ...)
+    new_file.grid(row = 0, column = 0, sticky = "nsew", padx = 10)
+
+    open_file = customtkinter.CTkButton(content, text = "Open File", font = ("TkDefaultFont", 20), command = ...)
+    open_file.grid(row = 0, column = 1, sticky = "nsew", padx = 10)
+
+    save_file = customtkinter.CTkButton(content, text = "Save File", font = ("TkDefaultFont", 20), command = ...)
+    save_file.grid(row = 0, column = 2, sticky = "nsew", padx = 10)
+
+    middle_filler = customtkinter.CTkLabel(content, text = "Key:", font = ("TkDefaultFont", 20))
+    middle_filler.grid(row = 0, column = 3, sticky = "nse")
+
+    key_trace = StringVar()
+    key_trace.trace("w", lambda name, index, mode, key_box=key_box: encryptor_input_change(text_in.get(0.0, 'end')))
+    key_entry = customtkinter.CTkEntry(content, font = ("TkDefaultFont", 20), textvariable = key_trace, width = 250)
+    key_entry.grid(row = 0, column = 4, sticky = "nsew", padx = 10)
+
+    encryption_type = customtkinter.CTkOptionMenu(content, values = ["Lvl. 1", "Lvl. 2"], font = ("TkDefaultFont", 20))
+    encryption_type.grid(row = 0, column = 5, sticky = "nsew", padx = 10)
+
+    canvas = customtkinter.CTkTextbox(content, wrap = "word")
+    canvas.grid(row = 1, column = 0, columnspan = 6, rowspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
 def switch_page(ins):
     if ins == "Lvl. 1":
