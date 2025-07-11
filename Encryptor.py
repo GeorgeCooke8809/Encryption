@@ -36,10 +36,12 @@ def encryptor_input_change(event):
                 next_encrypted_letter = encrypt(i, index)
                 encrypted = encrypted + str(next_encrypted_letter)
                 index = index + 1
-
-        print(f"{plain_text = }")
-        print(f"{encrypted = }")
-        notepad_encrypted = encrypted
+        try:
+            print(f"{plain_text = }")
+            print(f"{encrypted = }")
+            notepad_encrypted = encrypted
+        except:
+            print("FAIL")
 
 def encrypt(text, index):
     global key_box, alphabet, page, key
@@ -290,16 +292,20 @@ def note_page():
 
     key_box = StringVar()
     key_box.trace("w", lambda name, index, mode, key_box=key_box: encryptor_input_change(canvas.get(0.0, 'end')))
-
     key = customtkinter.CTkEntry(content, placeholder_text = "Key", font = ("TkDefaultFont", 20), width = 400, textvariable = key_box)
     key.grid(row = 0, column = 4, sticky = "nsew", padx = 10)
 
-    encryption_type = customtkinter.CTkOptionMenu(content, values = ["Lvl. 1", "Lvl. 2"], font = ("TkDefaultFont", 20))
+    encryption_type_trace = StringVar()
+    
+    encryption_type_trace.set("Lvl. 1")
+    encryption_type = customtkinter.CTkOptionMenu(content, values = ["Lvl. 1", "Lvl. 2"], font = ("TkDefaultFont", 20), variable = encryption_type_trace)
     encryption_type.grid(row = 0, column = 5, sticky = "nsew", padx = 10)
 
     canvas = customtkinter.CTkTextbox(content, wrap = "word")
     canvas.bind('<KeyRelease>', encryptor_input_change)
     canvas.grid(row = 1, column = 0, columnspan = 6, rowspan = 1, sticky = "nsew", padx = 10, pady = 10)
+
+    encryption_type_trace.trace("w", lambda name, index, mode, encryption_type_trace=encryption_type_trace: encryptor_input_change(canvas.get(0.0, 'end'))) # I would have wanted to have this with the encryption_type varibale but it was throwing errors because canvas wasn't declared even though that was fine earlier. idc, at the end of the day it works so oh well
 
 def switch_page(ins):
     if ins == "Lvl. 1":
