@@ -3,7 +3,7 @@ import customtkinter
 import ctypes
 
 def encryptor_input_change(event):
-    global page, text_in, text_out
+    global page, text_in, text_out, canvas, encryption_type, notepad_encrypted
 
     if page == "Lvl. 1":
         plain_text = text_in.get(0.0, 'end')
@@ -22,8 +22,27 @@ def encryptor_input_change(event):
         text_out.delete(0.0, 'end')
         text_out.insert(0.0, string)
 
+    elif page == "Notepad":
+        plain_text = canvas.get(0.0, 'end')
+        encryption_method = encryption_type.get()
+
+        if encryption_method == "Lvl. 1":
+            encrypted = encrypt(plain_text, "null")
+        elif encryption_method == "Lvl. 2":
+            encrypted = ""
+            index = 0
+
+            for i in plain_text:
+                next_encrypted_letter = encrypt(i, index)
+                encrypted = encrypted + str(next_encrypted_letter)
+                index = index + 1
+
+        print(f"{plain_text = }")
+        print(f"{encrypted = }")
+        notepad_encrypted = encrypted
+
 def encrypt(text, index):
-    global key_box, alphabet, page
+    global key_box, alphabet, page, key
 
     if page == "Lvl. 1":
         new_alphabet = key_change(key_box)
@@ -42,7 +61,6 @@ def encrypt(text, index):
         text_out.insert(0.0, encrypted)
 
     elif page == "Lvl. 2":
-
         key_string = key_box.get()
         try:
             direction = key_string[0]
@@ -75,6 +93,57 @@ def encrypt(text, index):
         except:
             pass
 
+    elif page == "Notepad":
+        if index == "null": # Lvl. 1 encryption
+            new_alphabet = key_change(key)
+
+            encrypted = ""
+
+            for i in text:
+                try:
+                    position_original_alphabet = alphabet.index(i)
+                    new_char = new_alphabet[position_original_alphabet]
+                    encrypted = encrypted + new_char
+                except:
+                    encrypted = encrypted + i
+
+            return encrypted
+
+        else: # Lvl. 2 encryption
+            key_string = key.get()
+
+            try:
+
+                direction = key_string[0]
+                key_int = int(key_string[1:])
+
+                length_key = len(str(key_int))
+                key_index = index % length_key
+                ammount = int(str(key_int)[key_index])
+
+                new_alphabet = []
+                new_alphabet.extend(alphabet)
+
+                if direction == "L":
+                    new_alphabet.extend(new_alphabet[0:ammount])
+                    del(new_alphabet[0:ammount])
+                elif direction == "R":
+                    temp = new_alphabet[-ammount:]
+                    temp.extend(new_alphabet)
+                    new_alphabet = temp
+                    del(new_alphabet[-ammount:])
+
+                try:
+                    position_original_alphabet = alphabet.index(text)
+                    next_letter = new_alphabet[position_original_alphabet]
+                except:
+                    next_letter = text
+
+                return next_letter
+
+            except:
+                pass
+
 def encrypt_alphabet(direction, ammount):
     global alphabet
 
@@ -99,6 +168,16 @@ def key_change(key_box):
     key_string = key_box.get()
 
     if page == "Lvl. 1":
+        try:
+            if key_string[0] not in ["L", "R"]:
+                ctypes.windll.user32.MessageBoxW(0, "Key Must Begin With L or R", "WARNING:", 0)
+            
+            return encrypt_alphabet(key_string[0], int(key_string[1:]))
+
+        except:
+            pass
+
+    elif page == "Notepad":
         try:
             if key_string[0] not in ["L", "R"]:
                 ctypes.windll.user32.MessageBoxW(0, "Key Must Begin With L or R", "WARNING:", 0)
@@ -179,7 +258,7 @@ def lvl_2_page():
     text_out.grid(row = 2, column = 0, columnspan = 1, rowspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
 def note_page():
-    global content, page
+    global content, page, canvas, encryption_type, key
 
     page = "Notepad"
 
@@ -209,15 +288,17 @@ def note_page():
     middle_filler = customtkinter.CTkLabel(content, text = "Key:", font = ("TkDefaultFont", 20))
     middle_filler.grid(row = 0, column = 3, sticky = "nse")
 
-    key_trace = StringVar()
-    key_trace.trace("w", lambda name, index, mode, key_box=key_box: encryptor_input_change(text_in.get(0.0, 'end')))
-    key_entry = customtkinter.CTkEntry(content, font = ("TkDefaultFont", 20), textvariable = key_trace, width = 250)
-    key_entry.grid(row = 0, column = 4, sticky = "nsew", padx = 10)
+    key_box = StringVar()
+    key_box.trace("w", lambda name, index, mode, key_box=key_box: encryptor_input_change(canvas.get(0.0, 'end')))
+
+    key = customtkinter.CTkEntry(content, placeholder_text = "Key", font = ("TkDefaultFont", 20), width = 400, textvariable = key_box)
+    key.grid(row = 0, column = 4, sticky = "nsew", padx = 10)
 
     encryption_type = customtkinter.CTkOptionMenu(content, values = ["Lvl. 1", "Lvl. 2"], font = ("TkDefaultFont", 20))
     encryption_type.grid(row = 0, column = 5, sticky = "nsew", padx = 10)
 
     canvas = customtkinter.CTkTextbox(content, wrap = "word")
+    canvas.bind('<KeyRelease>', encryptor_input_change)
     canvas.grid(row = 1, column = 0, columnspan = 6, rowspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
 def switch_page(ins):
