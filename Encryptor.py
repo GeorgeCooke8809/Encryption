@@ -91,15 +91,16 @@ def func_save_file():
     global file_path, notepad_encrypted
 
     if file_path == "": # If file has ! been created or opened --> will need to save new file location and make it
-        # 1. Ask for file path and name to save to,
-        # 2. Create file,
-        # 3. Write encrypted text to new text file,
-        
-        pass
-    else:
-        # 1. Overwrite existing file with new encrypted text,
+        file = filedialog.asksaveasfilename(initialdir = "C:\\", title = "Save As Encrypted Text File", filetypes = (("Text File", "*.txt"), ))
 
-        pass
+        try:
+            file_path = file + ".txt"
+        except:
+            file_path = ""        
+
+    file_rw = open(file_path, "w")
+    file_rw.write(notepad_encrypted)
+    file_rw.close()
 
 def encryptor_input_change(event):
     global page, text_in, text_out, canvas, encryption_type, notepad_encrypted
@@ -431,7 +432,7 @@ def note_page():
     open_file = customtkinter.CTkButton(content, text = "Open File", font = ("TkDefaultFont", 20), command = func_open_file)
     open_file.grid(row = 0, column = 1, sticky = "nsew")
 
-    save_file = customtkinter.CTkButton(content, text = "Save File", font = ("TkDefaultFont", 20), command = ...)
+    save_file = customtkinter.CTkButton(content, text = "Save File", font = ("TkDefaultFont", 20), command = func_save_file)
     save_file.grid(row = 0, column = 2, sticky = "nsew", padx = 10)
 
     middle_filler = customtkinter.CTkLabel(content, text = "Key:", font = ("TkDefaultFont", 20))
