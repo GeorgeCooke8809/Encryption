@@ -1,6 +1,68 @@
+from ast import Try
 from tkinter import *
 import customtkinter
 import ctypes
+from tkinter import filedialog
+
+def func_new_file():
+    global file_path, file_rw
+
+    # 1. Ask for file location and name,
+    # 2. Create file,
+    # 3. Clear notepad,
+    
+    file = filedialog.asksaveasfilename(initialdir = "C:\\", title = "Create Encrypted Text File", filetypes = (("Text File", "*.txt"), ))
+
+    try:
+        file_path = file + ".txt"
+        file_rw = open(file_path, "w")
+        file_rw.close()
+
+        canvas.delete(0.0, 'end')
+    except:
+        file_path = ""
+
+    pass
+
+def func_open_file():
+    global file_path
+
+    # 1. Ask for file location,
+    # 2. Ask for decryption key (below),
+
+    key_request_root = customtkinter.CTk()
+    key_request_frame = customtkinter.CTkFrame(key_request_root)
+
+    key_request_frame.rowconfigure(0)
+
+    key_request_frame.columnconfigure(0, weight = 3)
+    key_request_frame.columnconfigure(1, weight = 1)
+
+    key_request_box = customtkinter.CTkEntry() # CONTINUE THE BRACKETS HERE
+
+    key_request_frame.pack(padx = 10, pady = 10, anchor = "center", expand = True, fill = "both")
+    key_request_root.mainloop()
+
+    # 3. Decrypt file,
+    # 4. Clear notepad,
+    # 5. Insert decrypted text into file,
+    # 6. Insert encyption key into key box,
+
+    pass
+
+def func_save_file():
+    global file_path, notepad_encrypted
+
+    if file_path == "": # If now file has been created or opened --> will need to save new file location and make it
+        # 1. Ask for file path and name to save to,
+        # 2. Create file,
+        # 3. Write encrypted text to new text file,
+        
+        pass
+    else:
+        # 1. Overwrite existing file with new encrypted text,
+
+        pass
 
 def encryptor_input_change(event):
     global page, text_in, text_out, canvas, encryption_type, notepad_encrypted
@@ -260,8 +322,9 @@ def lvl_2_page():
     text_out.grid(row = 2, column = 0, columnspan = 1, rowspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
 def note_page():
-    global content, page, canvas, encryption_type, key
+    global content, page, canvas, encryption_type, key, file_path
 
+    file_path = ""
     page = "Notepad"
 
     content.destroy()
@@ -278,7 +341,7 @@ def note_page():
     content.columnconfigure(4, weight = 1, minsize = 300)
     content.columnconfigure(5, weight = 1, minsize = 120)
 
-    new_file = customtkinter.CTkButton(content, text = "New File", font = ("TkDefaultFont", 20), command = ...)
+    new_file = customtkinter.CTkButton(content, text = "New File", font = ("TkDefaultFont", 20), command = func_new_file)
     new_file.grid(row = 0, column = 0, sticky = "nsew", padx = 10)
 
     open_file = customtkinter.CTkButton(content, text = "Open File", font = ("TkDefaultFont", 20), command = ...)
