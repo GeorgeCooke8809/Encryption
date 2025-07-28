@@ -21,7 +21,7 @@ def func_new_file():
         file_path = ""
 
 def func_open_file():
-    global file_path, decryption_key, key_request_box, key_request_root, decryption_type, encryption_type_select
+    global file_path, decryption_key, key_request_box, key_request_root, decryption_type, encryption_type_select, encryption_key, key, widget_encryption_type
 
     file_path = filedialog.askopenfilename(initialdir = "C:\\", title = "Create Encrypted Text File", filetypes = (("Text File", "*.txt"), ))
 
@@ -64,13 +64,15 @@ def func_open_file():
 
     print(f"{decrypted = }")
 
-    # 3. Decrypt file,
-    # 4. Clear notepad,
-    # 5. Insert decrypted text into file,
-    # 6. Insert encyption key into key box,
+    canvas.delete(0.0, 'end')
+    canvas.insert(0.0, decrypted)
+
+    key.insert(0, encryption_key)
+    encryption_type.set(decryption_type)
+    # 7. Change encryption level on page,
 
 def func_get_import_file_key():
-    global decryption_key, decryption_type
+    global decryption_key, decryption_type, encryption_key
 
     encryption_key = key_request_box.get()
     decryption_key = encryption_key
@@ -403,7 +405,7 @@ def lvl_2_page():
     text_out.grid(row = 2, column = 0, columnspan = 1, rowspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
 def note_page():
-    global content, page, canvas, encryption_type, key, file_path
+    global content, page, canvas, encryption_type, key, file_path, key, widget_encryption_type
 
     file_path = ""
     page = "Notepad"
