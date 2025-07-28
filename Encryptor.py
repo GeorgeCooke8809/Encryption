@@ -4,12 +4,10 @@ import customtkinter
 import ctypes
 from tkinter import filedialog
 
+
+
 def func_new_file():
     global file_path, file_rw
-
-    # 1. Ask for file location and name,
-    # 2. Create file,
-    # 3. Clear notepad,
     
     file = filedialog.asksaveasfilename(initialdir = "C:\\", title = "Create Encrypted Text File", filetypes = (("Text File", "*.txt"), ))
 
@@ -22,38 +20,71 @@ def func_new_file():
     except:
         file_path = ""
 
-    pass
-
 def func_open_file():
-    global file_path
+    global file_path, decryption_key, key_request_box, key_request_root, decryption_type, encryption_type_select
 
-    # 1. Ask for file location,
-    # 2. Ask for decryption key (below),
+    file_path = filedialog.askopenfilename(initialdir = "C:\\", title = "Create Encrypted Text File", filetypes = (("Text File", "*.txt"), ))
+
+    file_rw = open(file_path, "r+")
+
+    encrypted = file_rw.read()
+
+    file_rw.close()
+
 
     key_request_root = customtkinter.CTk()
-    key_request_frame = customtkinter.CTkFrame(key_request_root)
 
-    key_request_frame.rowconfigure(0)
+    key_request_root.title("Submit File Encryption Key:")
+    key_request_root.minsize(300, 100)
+
+    key_request_frame = customtkinter.CTkFrame(key_request_root, fg_color = "transparent")
+
+    key_request_frame.rowconfigure(0, weight = 1)
+    key_request_frame.rowconfigure(1, weight = 1)
 
     key_request_frame.columnconfigure(0, weight = 3)
     key_request_frame.columnconfigure(1, weight = 1)
 
-    key_request_box = customtkinter.CTkEntry() # CONTINUE THE BRACKETS HERE
+    key_request_box = customtkinter.CTkEntry(key_request_frame, placeholder_text = "Encryption Key")
+    key_request_box.grid(row = 0, column = 0)
+
+    encryption_type_select = customtkinter.CTkOptionMenu(key_request_frame, values = ["Lvl. 1", "Lvl. 2"])
+    encryption_type_select.grid(row = 0, column = 1)
+
+    submit_key_button = customtkinter.CTkButton(key_request_frame, text = "Continue", command = func_get_import_file_key)
+    submit_key_button.grid(pady = 10, row = 1, column = 0, columnspan = 2, sticky = "nesw")
 
     key_request_frame.pack(padx = 10, pady = 10, anchor = "center", expand = True, fill = "both")
     key_request_root.mainloop()
+
+    print(f"{decryption_key = }")
+    print(f"{decryption_type = }")
 
     # 3. Decrypt file,
     # 4. Clear notepad,
     # 5. Insert decrypted text into file,
     # 6. Insert encyption key into key box,
 
-    pass
+def func_get_import_file_key():
+    global decryption_key, decryption_type
+
+    encryption_key = key_request_box.get()
+    decryption_key = encryption_key
+
+    if encryption_key[0] == "L":
+        decryption_key = "R" + decryption_key[1::]
+    else:
+        decryption_key = "L" + decryption_key[1::]
+
+    decryption_type = encryption_type_select.get()
+
+    key_request_root.withdraw()
+    key_request_root.quit()
 
 def func_save_file():
     global file_path, notepad_encrypted
 
-    if file_path == "": # If now file has been created or opened --> will need to save new file location and make it
+    if file_path == "": # If file has ! been created or opened --> will need to save new file location and make it
         # 1. Ask for file path and name to save to,
         # 2. Create file,
         # 3. Write encrypted text to new text file,
@@ -105,7 +136,28 @@ def encryptor_input_change(event):
         except:
             print("FAIL")
 
-def encrypt(text, index):
+def decrypt(text, key, level): # This can be merged into encryt (function below) at a later date
+    if level == "Lvl. 1":
+        direct = key[0]
+        amnt = int(key[1::])
+
+        new_alphabet = encrypt_alphabet(direct, amnt)
+
+        decrypted = ""
+
+        for i in text:
+            try:
+                position_original_alphabet = alphabet.index(i)
+                new_char = new_alphabet[position_original_alphabet]
+                decrypted = decrypted + new_char
+            except:
+                decrypted = decrypted + i
+        
+        return decrypted
+    elif level == "Lvl. 2":
+        pass
+
+def encrypt(text, index): # TODO: Make this an actual function so no global variables needed - use lambdas?
     global key_box, alphabet, page, key
 
     if page == "Lvl. 1":
@@ -337,26 +389,27 @@ def note_page():
     content.columnconfigure(0, weight = 1, minsize = 120)
     content.columnconfigure(1, weight = 1, minsize = 120)
     content.columnconfigure(2, weight = 1, minsize = 120)
-    content.columnconfigure(3, weight = 1000000)
+    content.columnconfigure(3, weight = 1000000, minsize = 75)
     content.columnconfigure(4, weight = 1, minsize = 300)
     content.columnconfigure(5, weight = 1, minsize = 120)
+
 
     new_file = customtkinter.CTkButton(content, text = "New File", font = ("TkDefaultFont", 20), command = func_new_file)
     new_file.grid(row = 0, column = 0, sticky = "nsew", padx = 10)
 
-    open_file = customtkinter.CTkButton(content, text = "Open File", font = ("TkDefaultFont", 20), command = ...)
-    open_file.grid(row = 0, column = 1, sticky = "nsew", padx = 10)
+    open_file = customtkinter.CTkButton(content, text = "Open File", font = ("TkDefaultFont", 20), command = func_open_file)
+    open_file.grid(row = 0, column = 1, sticky = "nsew")
 
     save_file = customtkinter.CTkButton(content, text = "Save File", font = ("TkDefaultFont", 20), command = ...)
     save_file.grid(row = 0, column = 2, sticky = "nsew", padx = 10)
 
     middle_filler = customtkinter.CTkLabel(content, text = "Key:", font = ("TkDefaultFont", 20))
-    middle_filler.grid(row = 0, column = 3, sticky = "nse")
+    middle_filler.grid(row = 0, column = 3, sticky = "nse", padx = 10)
 
     key_box = StringVar()
     key_box.trace("w", lambda name, index, mode, key_box=key_box: encryptor_input_change(canvas.get(0.0, 'end')))
     key = customtkinter.CTkEntry(content, placeholder_text = "Key", font = ("TkDefaultFont", 20), width = 400, textvariable = key_box)
-    key.grid(row = 0, column = 4, sticky = "nsew", padx = 10)
+    key.grid(row = 0, column = 4, sticky = "nsew")
 
     encryption_type_trace = StringVar()
     
