@@ -60,6 +60,10 @@ def func_open_file():
     print(f"{decryption_key = }")
     print(f"{decryption_type = }")
 
+    decrypted = decrypt(encrypted, decryption_key, decryption_type)
+
+    print(f"{decrypted = }")
+
     # 3. Decrypt file,
     # 4. Clear notepad,
     # 5. Insert decrypted text into file,
@@ -138,6 +142,8 @@ def encryptor_input_change(event):
 
 def decrypt(text, key, level): # This can be merged into encryt (function below) at a later date
     if level == "Lvl. 1":
+        print(f"DEBUG - {text = }")
+
         direct = key[0]
         amnt = int(key[1::])
 
@@ -145,17 +151,40 @@ def decrypt(text, key, level): # This can be merged into encryt (function below)
 
         decrypted = ""
 
-        for i in text:
+        for letter in text:
             try:
-                position_original_alphabet = alphabet.index(i)
+                position_original_alphabet = alphabet.index(letter)
                 new_char = new_alphabet[position_original_alphabet]
                 decrypted = decrypted + new_char
             except:
-                decrypted = decrypted + i
+                decrypted = decrypted + letter
         
         return decrypted
-    elif level == "Lvl. 2":
-        pass
+
+    elif level == "Lvl. 2": # BROKEN
+        direct = key[0]
+        amnts = key[1::]
+        index = 0
+
+        decrypted = ""
+
+        for letter in text:
+            key_index = index % len(amnts)
+
+            shift = int(amnts[key_index])
+
+            new_alphabet = encrypt_alphabet(direct, shift)
+
+            try:
+                position_original_alphabet = alphabet.index(letter)
+                new_char = new_alphabet[position_original_alphabet]
+                decrypted = decrypted + new_char
+            except:
+                decrypted = decrypted + letter
+
+            index = index + 1
+
+        return decrypted
 
 def encrypt(text, index): # TODO: Make this an actual function so no global variables needed - use lambdas?
     global key_box, alphabet, page, key
