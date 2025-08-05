@@ -112,6 +112,24 @@ def func_lvl_two_encryptor_input_change(event): # Triggered when the text is cha
     widget_text_out.delete(0.0, 'end')
     widget_text_out.insert(0.0, encrypted_text)
 
+def func_lvl_one_encryptor_output_change(event):
+    encrypted_text = widget_text_out.get(0.0, 'end')
+    encryption_key = widget_key_box.get()
+
+    plain_text = Encryption.decrypt(encrypted_text, encryption_key, "Lvl. 1")
+
+    widget_text_in.delete(0.0, 'end')
+    widget_text_in.insert(0.0, plain_text)
+
+def func_lvl_two_encryptor_output_change(event):
+    encrypted_text = widget_text_out.get(0.0, 'end')
+    encryption_key = widget_key_box.get()
+
+    plain_text = Encryption.decrypt(encrypted_text, encryption_key, "Lvl. 2")
+
+    widget_text_in.delete(0.0, 'end')
+    widget_text_in.insert(0.0, plain_text)
+
 def lvl_1_page(content):
     global widget_text_in, widget_key_box, widget_text_out
 
@@ -167,6 +185,7 @@ def lvl_1_page(content):
     text_out_label.grid(row = 4, column = 0, columnspan = 1, sticky = "nsw", padx = 10)
 
     widget_text_out = customtkinter.CTkTextbox(content, wrap = "word")
+    widget_text_out.bind('<KeyRelease>', func_lvl_one_encryptor_output_change)
     widget_text_out.grid(row = 5, column = 0, columnspan = 1, rowspan = 1, sticky = "nsew", padx = 10)
 
     spacing_label = customtkinter.CTkLabel(content, text = "", font = ("TkDefaultFont", 1))
@@ -227,6 +246,7 @@ def lvl_2_page(content):
     text_out_label.grid(row = 4, column = 0, columnspan = 1, sticky = "nsw", padx = 10)
 
     widget_text_out = customtkinter.CTkTextbox(content, wrap = "word")
+    widget_text_out.bind('<KeyRelease>', func_lvl_two_encryptor_output_change)
     widget_text_out.grid(row = 5, column = 0, columnspan = 1, rowspan = 1, sticky = "nsew", padx = 10)
 
     spacing_label = customtkinter.CTkLabel(content, text = "", font = ("TkDefaultFont", 1))
