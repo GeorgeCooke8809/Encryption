@@ -8,7 +8,7 @@ def INOP(function):
     ctypes.windll.user32.MessageBoxW(0, f"This feature is currently INOP. {function = }", "WARNING:", 0)
 
 def func_new_file(canvas, key_box): # Create new file button in notepad page
-    global file_path # I HATE GLOBAL VARIABLES - MESSY --- FIX IF POSSIBLE!!!!!!!!!!!!!!!!!!!!
+    global file_path
 
     file = filedialog.asksaveasfilename(initialdir = "C:\\", title = "Create Encrypted Text File", filetypes = (("Text File", "*.txt"), ))
 
@@ -24,7 +24,7 @@ def func_new_file(canvas, key_box): # Create new file button in notepad page
 
 
 
-def func_open_file(canvas, key_box, widget_encryption_type): # Open file button in notepad page
+def func_open_file(widget_canvas, widget_key_box, widget_encryption_type): # Open file button in notepad page
     global file_path
 
     file_path = filedialog.askopenfilename(initialdir = "C:\\", title = "Create Encrypted Text File", filetypes = (("Text File", "*.txt"), ))
@@ -48,40 +48,40 @@ def func_open_file(canvas, key_box, widget_encryption_type): # Open file button 
     key_request_frame.columnconfigure(0, weight = 3)
     key_request_frame.columnconfigure(1, weight = 1)
 
-    key_request_box = customtkinter.CTkEntry(key_request_frame, placeholder_text = "Encryption Key")
-    key_request_box.grid(row = 0, column = 0)
+    widget_key_request_box = customtkinter.CTkEntry(key_request_frame, placeholder_text = "Encryption Key")
+    widget_key_request_box.grid(row = 0, column = 0)
 
-    encryption_type_select = customtkinter.CTkOptionMenu(key_request_frame, values = ["Lvl. 1", "Lvl. 2"])
-    encryption_type_select.grid(row = 0, column = 1)
+    widget_encryption_type_select = customtkinter.CTkOptionMenu(key_request_frame, values = ["Lvl. 1", "Lvl. 2"])
+    widget_encryption_type_select.grid(row = 0, column = 1)
 
-    submit_key_button = customtkinter.CTkButton(key_request_frame, text = "Continue", command = lambda: func_continue_open(key_request_box, encryption_type_select, encrypted, canvas, key_box, key_request_root, widget_encryption_type))
-    submit_key_button.grid(pady = 10, row = 1, column = 0, columnspan = 2, sticky = "nesw")
+    widget_submit_key_button = customtkinter.CTkButton(key_request_frame, text = "Continue", command = lambda: func_continue_open(widget_key_request_box, widget_encryption_type_select, encrypted, widget_canvas, widget_key_box, key_request_root, widget_encryption_type))
+    widget_submit_key_button.grid(pady = 10, row = 1, column = 0, columnspan = 2, sticky = "nesw")
 
     key_request_frame.pack(padx = 10, pady = 10, anchor = "center", expand = True, fill = "both")
     key_request_root.mainloop()
 
-def func_continue_open(key_request_box, encryption_type_select, encrypted_text, canvas, key_box, key_request_root, widget_encryption_type): # Submit button in open file get key page - Triggered on button press
-    encryption_key = key_request_box.get()
-    encryption_type = encryption_type_select.get()
+def func_continue_open(widget_key_request_box, widget_encryption_type_select, encrypted_text, widget_canvas, widget_key_box, key_request_root, widget_encryption_type): # Submit button in open file get key page - Triggered on button press
+    encryption_key = widget_key_request_box.get()
+    encryption_type = widget_encryption_type_select.get()
 
     decrypted = Encryption.decrypt(encrypted_text, encryption_key, encryption_type)
 
-    canvas.delete(0.0, 'end')
-    canvas.insert(0.0, decrypted)
+    widget_canvas.delete(0.0, 'end')
+    widget_canvas.insert(0.0, decrypted)
 
-    key_box.delete(0, 'end')
-    key_box.insert(0, encryption_key)
+    widget_key_box.delete(0, 'end')
+    widget_key_box.insert(0, encryption_key)
 
     widget_encryption_type.set(encryption_type)
 
     key_request_root.withdraw()
     key_request_root.quit()
 
-def func_save_file(canvas, key_box, widget_encryption_type): # Save file button in notepad page
+def func_save_file(widget_canvas, widget_key_box, widget_encryption_type): # Save file button in notepad page
     global file_path
 
-    plain_text = canvas.get(0.0, 'end')
-    encryption_key = key_box.get()
+    plain_text = widget_canvas.get(0.0, 'end')
+    encryption_key = widget_key_box.get()
     encryption_type = widget_encryption_type.get()
 
     encrypted_text = Encryption.encrypt(plain_text, encryption_key, encryption_type)
@@ -155,7 +155,7 @@ def lvl_1_page(content):
     key_label.grid(row = 0, column = 0, columnspan = 1, sticky = "nse", padx = 5)
 
     key = StringVar()
-    key.trace("w", lambda name, index, mode, key=key: func_lvl_one_encryptor_input_change("nah"))
+    key.trace("w", lambda name, index, mode, key=key: func_lvl_one_encryptor_input_change(""))
 
     widget_key_box = customtkinter.CTkEntry(key_frame, placeholder_text = "Key", font = ("TkDefaultFont", 20), width = 400, textvariable = key)
     widget_key_box.grid(row = 0, column = 1, padx = 5, sticky = "nsw")
@@ -252,31 +252,31 @@ def note_page(content):
     canvas = customtkinter.CTkTextbox(content, wrap = "word")
     canvas.grid(row = 1, column = 0, columnspan = 6, rowspan = 1, sticky = "nsew", padx = 10, pady = 10)
 
-    key_box = customtkinter.CTkEntry(content, placeholder_text = "Key", font = ("TkDefaultFont", 20), width = 400)
-    key_box.grid(row = 0, column = 4, sticky = "nsew")
+    widget_key_box = customtkinter.CTkEntry(content, placeholder_text = "Key", font = ("TkDefaultFont", 20), width = 400)
+    widget_key_box.grid(row = 0, column = 4, sticky = "nsew")
 
     widget_encryption_type = customtkinter.CTkOptionMenu(content, values = ["Lvl. 1", "Lvl. 2"], font = ("TkDefaultFont", 20))
     widget_encryption_type.grid(row = 0, column = 5, sticky = "nsew", padx = 10)
 
-    new_file = customtkinter.CTkButton(content, text = "New File", font = ("TkDefaultFont", 20), command = lambda: func_new_file(canvas, key_box))
-    new_file.grid(row = 0, column = 0, sticky = "nsew", padx = 10)
+    widget_new_file_button = customtkinter.CTkButton(content, text = "New File", font = ("TkDefaultFont", 20), command = lambda: func_new_file(canvas, widget_key_box))
+    widget_new_file_button.grid(row = 0, column = 0, sticky = "nsew", padx = 10)
 
-    open_file = customtkinter.CTkButton(content, text = "Open File", font = ("TkDefaultFont", 20), command = lambda: func_open_file(canvas, key_box, widget_encryption_type))
-    open_file.grid(row = 0, column = 1, sticky = "nsew")
+    widget_open_file_button = customtkinter.CTkButton(content, text = "Open File", font = ("TkDefaultFont", 20), command = lambda: func_open_file(canvas, widget_key_box, widget_encryption_type))
+    widget_open_file_button.grid(row = 0, column = 1, sticky = "nsew")
 
-    save_file = customtkinter.CTkButton(content, text = "Save File", font = ("TkDefaultFont", 20), command = lambda: func_save_file(canvas, key_box, widget_encryption_type))
-    save_file.grid(row = 0, column = 2, sticky = "nsew", padx = 10)
+    widget_save_file_button = customtkinter.CTkButton(content, text = "Save File", font = ("TkDefaultFont", 20), command = lambda: func_save_file(canvas, widget_key_box, widget_encryption_type))
+    widget_save_file_button.grid(row = 0, column = 2, sticky = "nsew", padx = 10)
 
     middle_filler = customtkinter.CTkLabel(content, text = "Key:", font = ("TkDefaultFont", 20))
     middle_filler.grid(row = 0, column = 3, sticky = "nse", padx = 10)
 
 
-def switch_page(ins):
-    if ins == "Lvl. 1":
+def switch_page(button_position):
+    if button_position == "Lvl. 1":
         lvl_1_page(content)
-    elif ins == "Lvl. 2":
+    elif button_position == "Lvl. 2":
         lvl_2_page(content)
-    elif ins == "Notepad":
+    elif button_position == "Notepad":
         note_page(content)
 
 customtkinter.set_appearance_mode("dark")
@@ -297,12 +297,13 @@ content = customtkinter.CTkFrame(menu_frame)
 
 content.grid(row=1, column = 0, columnspan = 2, rowspan = 1, sticky = "nsew")
 
-menu_buttons = customtkinter.CTkSegmentedButton(menu_frame, values = ["Lvl. 1", "Lvl. 2", "Notepad"], command  = switch_page, font = ("TkDefaultFont", 20))
-menu_buttons.set("Lvl. 1")
-menu_buttons.grid(row = 0, column = 0, sticky = "nsw", padx = 10, pady = 10)
+widget_menu_buttons = customtkinter.CTkSegmentedButton(menu_frame, values = ["Lvl. 1", "Lvl. 2", "Notepad"], command  = switch_page, font = ("TkDefaultFont", 20))
+widget_menu_buttons.set("Lvl. 1")
+widget_menu_buttons.grid(row = 0, column = 0, sticky = "nsw", padx = 10, pady = 10)
 
 
 lvl_1_page(content)
+
 
 menu_frame.pack(anchor = "center", expand = True, fill = "both")
 

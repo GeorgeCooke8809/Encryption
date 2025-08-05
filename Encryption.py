@@ -84,8 +84,6 @@ def level_two_convert(text_in: str, key: str):
 
 
     for i in text_in:
-        print(i)
-
         current_key_index = index % key_number_length
         shift_ammount = int(key_number[current_key_index])
 
