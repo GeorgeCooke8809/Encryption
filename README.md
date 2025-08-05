@@ -25,7 +25,7 @@ python3 -m pip install customtkinter
 pip3 install customtkinter
 ```
 
-Having installed the prerequesites, the file "UI.py" can be double clicked and run. To view the code, open it in your IDE of choice.
+Having installed the prerequesites, the file "Encryption Tool" can be double clicked and run. To view the code, open it in your IDE of choice.
 
 ## Usage:
 Pages can be navigated through the menu at the top of the window. Pages are as follows: Lvl. 1, Lvl. 2, Notepad. The levels one and two pages act as playgrounds for experimentation with the encryption engine; plain text should be inputted in the topmost box of the page with the encryption key in the middle. Encrypted text will then be outputted in the bottom most box. Keys should start with either the capital letter "L" or the capital letter "R" and then be follwed by a string of integers. To decrypt encrypted text, copy the encrypted text in to the encrypted text out box in the relevant encryption level page and inserty the key into the key box.
